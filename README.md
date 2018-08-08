@@ -1,4 +1,4 @@
-ember-rdfa-editor-generic-model-plugin
+@lblod/ember-rdfa-editor-generic-model-plugin
 ==============================================================================
 
 [Short description of the addon.]
@@ -7,7 +7,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-ember install ember-rdfa-editor-generic-model-plugin
+ember install @lblod/ember-rdfa-editor-generic-model-plugin
 ```
 
 

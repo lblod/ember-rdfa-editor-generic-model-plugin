@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-rdfa-editor-generic-model-plugin'
+  name: '@lblod/ember-rdfa-editor-generic-model-plugin'
 };
