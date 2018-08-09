@@ -2,6 +2,19 @@ import { getOwner } from '@ember/application';
 import Service from '@ember/service';
 import EmberObject, { computed } from '@ember/object';
 import { task } from 'ember-concurrency';
+//TODO: match multiple times ~/
+//TODO: pagination
+//TODO: check model -> especially -> range, domain
+//TODO: die mark verdwijnt niet? Range fout voor remove highlight? -> clean up the hack
+//TODO: nog wat zeer irritante problemen met invislbe space enzo
+const INJECTCONTEXTS = [{
+  'card': 'editor-plugins/classes-card',
+  'strMatch': '~/',
+  'pattern': /\~\/\S*/ //e.g  ~/foo felix -> ~/foo
+},
+{'card': 'editor-plugins/properties-card',
+ 'strMatch': './',
+ 'pattern':  /.\/\S*/}];
 
 /**
  * Service responsible for correct annotation of dates
@@ -12,7 +25,6 @@ import { task } from 'ember-concurrency';
  * @extends EmberService
  */
 const RdfaEditorGenericModelPlugin = Service.extend({
-
   init(){
     this._super(...arguments);
     const config = getOwner(this).resolveRegistration('config:environment');
@@ -38,7 +50,7 @@ const RdfaEditorGenericModelPlugin = Service.extend({
       let relevantContext = this.detectRelevantContext(context);
       if (relevantContext) {
         hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
-        hints.pushObjects(this.generateHintsForContext(context));
+        hints.pushObjects(this.generateHintsForContext(relevantContext, context));
       }
     });
     const cards = hints.map( (hint) => this.generateCard(hrId, hintsRegistry, editor, hint));
@@ -54,15 +66,15 @@ const RdfaEditorGenericModelPlugin = Service.extend({
    *
    * @param {Object} context Text snippet at a specific location with an RDFa context
    *
-   * @return {String} URI of context if found, else empty string.
+   * @return {Object} InjectContext if found.
    *
    * @private
    */
   detectRelevantContext(context){
-    return context.text.toLowerCase().indexOf('hello') >= 0;
+    return INJECTCONTEXTS.find(c => {
+      return context.text.toLowerCase().match(c.pattern);
+    });
   },
-
-
 
   /**
    * Maps location of substring back within reference location
@@ -98,13 +110,13 @@ const RdfaEditorGenericModelPlugin = Service.extend({
     return EmberObject.create({
       info: {
         label: this.get('who'),
-        plainValue: hint.text,
-        htmlString: '<b>hello world</b>',
+        query: hint.text,
         location: hint.location,
-        hrId, hintsRegistry, editor
+        hrId, hintsRegistry, editor,
+        context: hint.context
       },
       location: hint.location,
-      card: this.get('who')
+      card: hint.injectContext.card
     });
   },
 
@@ -119,12 +131,13 @@ const RdfaEditorGenericModelPlugin = Service.extend({
    *
    * @private
    */
-  generateHintsForContext(context){
+  generateHintsForContext(injectContext, context){
     const hints = [];
-    const index = context.text.toLowerCase().indexOf('hello');
-    const text = context.text.slice(index, index+5);
-    const location = this.normalizeLocation([index, index + 5], context.region);
-    hints.push({text, location});
+    const matched = context.text.toLowerCase().match(injectContext.pattern);
+    const index = matched.index;
+    const text = matched[0].split(injectContext.strMatch)[1];
+    const location = this.normalizeLocation([index, index + matched[0].length], context.region);
+    hints.push({context, text, location, injectContext});
     return hints;
   }
 });
