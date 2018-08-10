@@ -4,9 +4,13 @@ import EmberObject, { computed } from '@ember/object';
 import { task } from 'ember-concurrency';
 //TODO: match multiple times ~/
 //TODO: pagination
-//TODO: check model -> especially -> range, domain
-//TODO: die mark verdwijnt niet? Range fout voor remove highlight? -> clean up the hack
 //TODO: nog wat zeer irritante problemen met invislbe space enzo
+//TODO: include? as parameter
+//TODO: filtering on label when search is NOK -> should be URI match
+//TODO: nested presentation -> e.g. mandataris (mandaat, persoon)
+//TODO:  display relation
+
+//order matters
 const INJECTCONTEXTS = [
   {
     card: 'editor-plugins/resources-card',

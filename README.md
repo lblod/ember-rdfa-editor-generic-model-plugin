@@ -1,7 +1,7 @@
 @lblod/ember-rdfa-editor-generic-model-plugin
 ==============================================================================
 
-[Short description of the addon.]
+Plugin responsible for injecting and creating resources within a document.
 
 Installation
 ------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ ember install @lblod/ember-rdfa-editor-generic-model-plugin
 Usage
 ------------------------------------------------------------------------------
 
-[Longer description of how to use the addon in apps.]
+Plugin responsible for injecting and creating resources within a document.
 
 
 Contributing
