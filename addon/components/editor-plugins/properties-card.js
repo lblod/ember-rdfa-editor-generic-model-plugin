@@ -61,7 +61,7 @@ export default Component.extend({
   hintsRegistry: reads('info.hintsRegistry'),
 
   getAvailibleProperties: task( function *() {
-    let query = this.get('info.query').replace(/\u200B/, '');
+    let query = this.get('info.query').replace(/\u200B/, '').split('./')[1];
     let type = this.get('context').context[this.get('context').context.length - 1].object;
     let params = {'filter[:uri:]': type, 'include': 'properties,properties.range'};
 

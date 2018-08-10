@@ -7,14 +7,19 @@ import { task } from 'ember-concurrency';
 //TODO: check model -> especially -> range, domain
 //TODO: die mark verdwijnt niet? Range fout voor remove highlight? -> clean up the hack
 //TODO: nog wat zeer irritante problemen met invislbe space enzo
-const INJECTCONTEXTS = [{
-  'card': 'editor-plugins/classes-card',
-  'strMatch': '~/',
-  'pattern': /\~\/\S*/ //e.g  ~/foo felix -> ~/foo
-},
-{'card': 'editor-plugins/properties-card',
- 'strMatch': './',
- 'pattern':  /.\/\S*/}];
+const INJECTCONTEXTS = [
+  {
+    card: 'editor-plugins/resources-card',
+    pattern: /[~\/|.\/]\S*:\S*/
+  },
+  {
+    card: 'editor-plugins/classes-card',
+    pattern: /\~\/\S*/ //e.g  ~/foo felix -> ~/foo
+  },
+  {
+    card: 'editor-plugins/properties-card',
+    pattern:  /.\/\S*/
+  }];
 
 /**
  * Service responsible for correct annotation of dates
@@ -135,7 +140,7 @@ const RdfaEditorGenericModelPlugin = Service.extend({
     const hints = [];
     const matched = context.text.toLowerCase().match(injectContext.pattern);
     const index = matched.index;
-    const text = matched[0].split(injectContext.strMatch)[1];
+    const text = matched[0];
     const location = this.normalizeLocation([index, index + matched[0].length], context.region);
     hints.push({context, text, location, injectContext});
     return hints;

@@ -54,9 +54,10 @@ export default Component.extend({
   hintsRegistry: reads('info.hintsRegistry'),
 
   getAvailibleResources: task( function *() {
-    let classLabel = this.get('info.query').replace(/\u200B/, '').split(':')[0];
-    let searchQuery = this.get('info.query').replace(/\u200B/, '').split(':')[1];
-    let classMeta = yield this.getClassOfInterest.bind(this)(classLabel);
+    let preParsedString = this.get('info.query').replace(/\u200B/, '').split('/')[1];
+    let classLabel = preParsedString.split(':')[0];
+    let searchQuery = preParsedString.split(':')[1];
+    let classMeta = yield this.getClassOfInterest(classLabel);
     let resources = yield this.queryResource(classMeta, searchQuery);
 
     resources.map(r => {

@@ -54,7 +54,7 @@ export default Component.extend({
 
   getAvailibleClasses: task( function *() {
     let params = {};
-    let query = this.get('info.query').replace(/\u200B/, '');
+    let query = this.get('info.query').replace(/\u200B/, '').split('~/')[1];
     let results;
     if(query){
       params['filter[label]'] = query;
