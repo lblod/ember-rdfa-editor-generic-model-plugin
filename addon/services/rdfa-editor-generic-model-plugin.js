@@ -12,9 +12,12 @@ import { task } from 'ember-concurrency';
 
 //order matters
 const INJECTCONTEXTS = [
+  { card: 'editor-plugins/resources-relation-card',
+    pattern: /.\/\S*:\S*/
+  },
   {
     card: 'editor-plugins/resources-card',
-    pattern: /[~\/|.\/]\S*:\S*/
+    pattern: /~\/\S*:\S*/
   },
   {
     card: 'editor-plugins/classes-card',
