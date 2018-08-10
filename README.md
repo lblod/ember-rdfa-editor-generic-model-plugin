@@ -16,6 +16,12 @@ Usage
 
 Plugin responsible for injecting and creating resources within a document.
 
+Currently
+
+~/classType:searchTerm
+./property:searchTerm
+
+
 
 Contributing
 ------------------------------------------------------------------------------
