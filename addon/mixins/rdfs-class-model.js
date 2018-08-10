@@ -4,6 +4,7 @@ import { hasMany } from 'ember-data/relationships';
 
 export default Mixin.create({
   uri: attr(),
+  isPrimitive: attr(),
   label: attr(),
   description: attr(),
   apiPath: attr(),
