@@ -7,12 +7,12 @@ import uuidv4 from 'uuidv4';
 
 export default Component.extend({
   layout,
-  ajax: service(),
+  store: service(),
   init() {
     this._super(...arguments);
     this.set('errors', []);
     this.set('message', '');
-    this.set('clasess', '');
+    this.set('results', '');
     this.get('getAvailibleProperties').perform();
   },
 
@@ -61,55 +61,45 @@ export default Component.extend({
   hintsRegistry: reads('info.hintsRegistry'),
 
   getAvailibleProperties: task( function *() {
-    let filter = `filter[label]=${this.get('info.query').replace(/\u200B/, '')}`;
+    let query = this.get('info.query').replace(/\u200B/, '');
     let type = this.get('context').context[this.get('context').context.length - 1].object;
-    let baseQuery = `/properties?include=range&filter[domain][s-prefix]=${type}`;
-    let query = `/properties?include=range&${filter}&filter[domain][s-prefix]=${type}`;
-    let results  = yield this.get('ajax').request(this.get('info.query') ? query : baseQuery);
-    results = this.get('parseJSONAPIResults')(results);
-    this.set('classes', results);
+    let params = {'filter[:uri:]': type, 'include': 'properties,properties.range'};
+
+    if(query){
+      params['filter[properties][label]'] = query;
+    }
+
+    let results  = yield this.store.query('rdfs-class', params);
+    this.set('results', (results.firstObject || {}).properties || []);
   }),
 
-  parseJSONAPIResults(results){
-    return results['data'];
-  },
-
   rdfaForCreateProperty(label, propertyId){
-    return `<div> ${label}: <span property=${propertyId}>[geef waarde op]</span> </div>`;
+    return `<div> ${label}: <div property=${propertyId}>&nbsp;</div> </div>`;
   },
 
   rdfaForCreateRelationship(label, propertyId, typeOf, uriBase){
     let uri = `${uriBase}${uuidv4()}`;
     return `
+       ${label}
        <div property=${propertyId} typeof=${typeOf} resource="${uri}">
-        [geeft eigenschappen voor een "${label}" op]
+       &nbsp;
       </div>
     `;
   },
 
   actions: {
     async create(data){
-      //TODO: cleanup
-      let rel;
-      if(data.relationships.range.data){
-        let res = await this.get('ajax').request(`/classes/${data.relationships.range.data.id}`);
-        rel = this.get('parseJSONAPIResults')(res);
-      }
-
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
-      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-card');
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
 
-      if(rel){
-              this.get('editor').replaceTextWithHTML(...mappedLocation,
-                                               this.rdfaForCreateRelationship(data.attributes.label,
-                                                                              data.attributes['s-prefix'],
-                                                                              rel['attributes']['s-prefix'],
-                                                                              rel['attributes']['s-url']));
+      if(data.range.get('isPrimitive')){
+        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.uri));
         return;
       }
-
-      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.attributes.label,
-                                                                                      data.attributes['s-prefix']));
+      this.get('editor').replaceTextWithHTML(...mappedLocation,
+                                             this.rdfaForCreateRelationship(data.label, data.uri,
+                                                                            data.range.get('uri'),
+                                                                            data.range.get('baseUri')));
     },
     search(){
     }
