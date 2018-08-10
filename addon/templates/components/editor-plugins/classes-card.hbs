@@ -1,7 +1,7 @@
 {{#if getAvailibleClasses.isRunning}}
   <div class="loader"><span class="u-visually-hidden">Aan het laden</span></div>
 {{else}}
-  {{#if classes.length}}
+  {{#if results.length}}
     <!-- <div class="modal-dialog modal-dialog--static modal-dialog--small modal-dialog--sectioned"> -->
     <div class="modal-dialog__header">
       <div class="grid">
@@ -16,8 +16,8 @@
       </div>
     </div>
     <div class="modal-dialog__content modal-dialog__content--collapse">
-        {{#each classes as |result|}}
-            <h3>{{result.attributes.label}}</h3>
+        {{#each results as |result|}}
+            <h3>{{result.label}}</h3>
             <a href="#" onClick={{action "create" result}}>aanmaken</a>
             <a href="#" onClick={{action "search"}}>zoeken</a>
         {{/each}}

@@ -7,12 +7,12 @@ import uuidv4 from 'uuidv4';
 
 export default Component.extend({
   layout,
-  ajax: service(),
+  store: service(),
   init() {
     this._super(...arguments);
     this.set('errors', []);
     this.set('message', '');
-    this.set('clasess', '');
+    this.set('results', '');
     this.get('getAvailibleClasses').perform();
   },
 
@@ -53,22 +53,24 @@ export default Component.extend({
   hintsRegistry: reads('info.hintsRegistry'),
 
   getAvailibleClasses: task( function *() {
-    let filter = this.get('info.query').replace(/\u200B/, '');
-    let query = `/classes?filter[label]=${filter}`;
-    let results  = yield this.get('ajax').request(filter ? query : '/classes');
-    results = this.get('parseJSONAPIResults')(results);
-    this.set('classes', results);
+    let params = {};
+    let query = this.get('info.query').replace(/\u200B/, '');
+    let results;
+    if(query){
+      params['filter[label]'] = query;
+      results = yield this.store.query('rdfs-class', params);
+    }
+    else{
+      results = yield this.store.findAll('rdfs-class');
+    }
+    this.set('results', results);
   }),
-
-  parseJSONAPIResults(results){
-    return results['data'];
-  },
 
   rdfaForCreateInstance(label, typeOf, uriBase){
     let uri = `${uriBase}${uuidv4()}`;
     return `
        <div typeof=${typeOf} resource="${uri}">
-        [geeft eigenschappen voor een "${label}" op]
+       &nbsp;
       </div>
     `;
   },
@@ -76,10 +78,10 @@ export default Component.extend({
   actions: {
     create(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
-      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-card');
-      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateInstance(data.attributes.label,
-                                                                                      data.attributes['s-prefix'],
-                                                                                      data.attributes['s-url']));
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
+      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateInstance(data.label,
+                                                                                      data.uri,
+                                                                                      data.baseUri));
     },
     search(){
     }
