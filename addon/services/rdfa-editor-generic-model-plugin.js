@@ -2,6 +2,7 @@ import { getOwner } from '@ember/application';
 import Service from '@ember/service';
 import EmberObject, { computed } from '@ember/object';
 import { task } from 'ember-concurrency';
+//TODO: do we want recursive pattern matching e.g. ~/persoon:felix.is-aangesteld-als:flierefluiter.einddatum ?
 //TODO: match multiple times ~/
 //TODO: pagination
 //TODO: nog wat zeer irritante problemen met invislbe space enzo
