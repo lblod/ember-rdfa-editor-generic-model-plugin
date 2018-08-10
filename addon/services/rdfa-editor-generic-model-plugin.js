@@ -148,6 +148,6 @@ const RdfaEditorGenericModelPlugin = Service.extend({
 });
 
 RdfaEditorGenericModelPlugin.reopen({
-  who: 'editor-plugins/generic-model-card'
+  who: 'editor-plugins/generic-model-plugin'
 });
 export default RdfaEditorGenericModelPlugin;
