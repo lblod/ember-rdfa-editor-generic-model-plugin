@@ -63,14 +63,14 @@ export default Component.extend({
   getAvailibleProperties: task( function *() {
     let query = this.get('info.query').replace(/\u200B/, '').split('./')[1];
     let type = this.get('context').context[this.get('context').context.length - 1].object;
-    let params = {'filter[:uri:]': type, 'include': 'properties,properties.range'};
+    let params = {'filter[domain][:uri:]': type, 'include': 'range'};
 
     if(query){
-      params['filter[properties][label]'] = query;
+      params['filter[label]'] = query;
     }
 
-    let results  = yield this.store.query('rdfs-class', params);
-    this.set('results', (results.firstObject || {}).properties || []);
+    let results  = yield this.store.query('rdfs-property', params);
+    this.set('results', results);
   }),
 
   rdfaForCreateProperty(label, propertyId){
