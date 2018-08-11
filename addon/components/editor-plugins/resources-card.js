@@ -63,6 +63,45 @@ export default Component.extend(CardMixin, {
     return `<span typeOf="${typeOf}" resource=${uri}>${display}</span>`;
   },
 
+  async rdfaForExtend(resourceData, classMeta){
+    //get properties from class
+    let properties = await classMeta.get('properties');
+    let props = [];
+    let relations = [];
+    await Promise.all(properties.map(async p => {
+      if(!(await p.range).isPrimitive)
+        relations.push(p);
+      else
+        props.push(p);
+    }));
+
+    //start query
+    let query = `${classMeta.apiPath}/${resourceData.id}`;
+    let result = this.parseJSONAPIResults(await this.get('ajax').request(query));
+
+    //serialize props
+    let rdfaProps = props.map(p => {
+      return `<div> ${p.get('label')}: <div property=${p.get('uri')}> ${result.attributes[p.label]}</div> </div>`;
+    }).join('');
+
+    //serialize relations
+    let rdfaRels = (await Promise.all(relations.map(async r => {
+      //find included data for property
+      let relData = this.parseJSONAPIResults(await this.ajax.request(result.relationships[r.label].links.related));
+      //TODO: hasMANY!!
+      let relMetaData = await r.range;
+
+      let displayLabel = this.formatResourceDisplay(relData, relMetaData);
+
+      return `${r.label}: <span property=${r.uri} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
+    }))).join('');
+
+    return `<div typeOf="${classMeta.uri}" resource=${result.attributes['uri']}>
+              ${rdfaProps}
+              ${rdfaRels}
+            </div>`;
+  },
+
   actions: {
     refer(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
@@ -71,7 +110,11 @@ export default Component.extend(CardMixin, {
                                                                                       data.classMeta.uri,
                                                                                       data.display));
     },
-    extend(){
+    async extend(data){
+      let rdfa = await this.rdfaForExtend(data, data.classMeta);
+      let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
+      this.get('editor').replaceTextWithHTML(...mappedLocation, rdfa);
     }
   }
 });

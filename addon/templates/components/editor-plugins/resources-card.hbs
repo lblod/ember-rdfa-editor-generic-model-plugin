@@ -19,7 +19,7 @@
       {{#each resources as |result|}}
         <h3>{{result.display}}</h3>
         <a href="#" onClick={{action "refer" result}}>kort</a>
-        <a href="#" onClick={{action "extend"}}>uitgebreid</a>
+        <a href="#" onClick={{action "extend" result}}>uitgebreid</a>
       {{/each}}
     </div>
   {{else}}
