@@ -20,20 +20,22 @@ export default Component.extend(CardMixin, {
     let classMeta = yield this.getClassOfInterest(classLabel);
     let resources = yield this.queryResource(classMeta, searchQuery);
 
-    resources.map(r => {
+    yield Promise.all(resources.map(async r => {
       r.classMeta = classMeta;
-      r.display = this.formatResourceDisplay(r, classMeta);
-    });
+      r.display = await this.formatClassDisplay(r, classMeta);
+    }));
 
     this.set('resources', resources);
   }),
 
-  formatResourceDisplay(resource, classMeta){
-    let displayPropsToShow = JSON.parse(classMeta.displayProperties);
+  async formatClassDisplay(resource, classMeta){
+    let displayPropsToShow = JSON.parse(classMeta.displayProperties || '[]');
     let displayProperties = [];
-    displayPropsToShow.map(p => {
-      displayProperties.push(resource['attributes'][p]);
-    });
+    await Promise.all(displayPropsToShow.map(async p => {
+      let attrNames = p.split('.'); //expects persoon.is-bestuurlijke-alias-van
+      let propValue = await this.fetchNestedAttrValue(resource, attrNames);
+      displayProperties.push(propValue);
+    }));
 
     return displayProperties.join(' ');
   },
@@ -61,7 +63,7 @@ export default Component.extend(CardMixin, {
     let queryStr = `${classMetaData.apiPath}`;
     if(query){
       queryStr = `${queryStr}?${classMetaData.apiFilter}=${query}`;
-    };
+    }
     let results = await this.get('ajax').request(queryStr);
     results = this.get('parseJSONAPIResults')(results);
     return results;
@@ -78,21 +80,24 @@ export default Component.extend(CardMixin, {
   async rdfaForExtend(resourceData, classMeta){
     //get properties from class
     let properties = await classMeta.get('properties');
-    let props = [];
+
+    //make difference between attributes
+    let attributes = [];
     let relations = [];
     await Promise.all(properties.map(async p => {
       if(!(await p.range).isPrimitive)
         relations.push(p);
       else
-        props.push(p);
+        attributes.push(p);
     }));
 
     //start query
     let query = `${classMeta.apiPath}/${resourceData.id}`;
     let result = this.parseJSONAPIResults(await this.get('ajax').request(query));
 
-    //serialize props
-    let rdfaProps = props.map(p => {
+    //serialize attributes
+    //TODO: dataType
+    let rdfaProps = attributes.map(p => {
       return `<div> ${p.get('label')}: <div property=${p.get('uri')}> ${result.attributes[p.label]}</div> </div>`;
     }).join('');
 
@@ -103,7 +108,7 @@ export default Component.extend(CardMixin, {
       //TODO: hasMANY!!
       let relMetaData = await r.range;
 
-      let displayLabel = this.formatResourceDisplay(relData, relMetaData);
+      let displayLabel = await this.formatClassDisplay(relData, relMetaData);
 
       return `${r.label}: <span property=${r.uri} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
     }))).join('');
