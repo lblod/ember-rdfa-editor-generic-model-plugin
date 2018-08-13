@@ -38,6 +38,19 @@ export default Component.extend(CardMixin, {
     return displayProperties.join(' ');
   },
 
+  async fetchNestedAttrValue(resource, attrNames){
+    //TODO: fix has-many
+    if(attrNames.length == 0 || Object.keys(resource).length == 0)
+      return '';
+    let attrName = attrNames[0];
+    if(attrName in resource['attributes'])
+      return resource['attributes'][attrName];
+
+    let updatedResource = this.parseJSONAPIResults(await this.ajax.request(resource['relationships'][attrName].links.related));
+
+    return this.fetchNestedAttrValue(updatedResource, attrNames.slice(1));
+  },
+
   async getClassOfInterest(classLabel){
     let params = {'filter[:exact:label]': classLabel};
     let results = await this.store.query('rdfs-class', params);
