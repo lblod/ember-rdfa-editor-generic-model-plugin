@@ -76,11 +76,11 @@ export default Component.extend(CardMixin, {
     //serialize relations
     let rdfaRels = (await Promise.all(relations.map(async r => {
       //find included data for property
-      let relData = this.parseJSONAPIResults(await this.ajax.request(result.relationships[r.label].links.related));
+      let relData = parseJSONAPIResults(await this.ajax.request(result.relationships[r.label].links.related));
       //TODO: hasMANY!!
       let relMetaData = await r.range;
 
-      let displayLabel = await this.formatClassDisplay(relData, relMetaData);
+      let displayLabel = await formatClassDisplay( query => { return this.ajax.request(query); }, relMetaData, relData);
 
       return `${r.label}: <span property=${r.uri} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
     }))).join('');
