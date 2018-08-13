@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 import layout from '../../templates/components/editor-plugins/classes-card';
 import CardMixin from '../../mixins/card-mixin';
-import { task, timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 import uuidv4 from 'uuidv4';
 
 export default Component.extend(CardMixin, {

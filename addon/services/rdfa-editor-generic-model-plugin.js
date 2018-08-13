@@ -1,6 +1,5 @@
-import { getOwner } from '@ember/application';
 import Service from '@ember/service';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 import { task } from 'ember-concurrency';
 //TODO: do we want recursive pattern matching e.g. ~/persoon:felix.is-aangesteld-als:flierefluiter.einddatum ?
 //TODO: match multiple times ~/
@@ -18,11 +17,11 @@ const INJECTCONTEXTS = [
   },
   {
     card: 'editor-plugins/resources-card',
-    pattern: /\~\/\S*:\S*/
+    pattern: /~\/\S*:\S*/
   },
   {
     card: 'editor-plugins/classes-card',
-    pattern: /\~\/\S*/ //e.g  ~/foo felix -> ~/foo
+    pattern: /~\/\S*/ //e.g  ~/foo felix -> ~/foo
   },
   {
     card: 'editor-plugins/properties-card',
@@ -40,7 +39,6 @@ const INJECTCONTEXTS = [
 const RdfaEditorGenericModelPlugin = Service.extend({
   init(){
     this._super(...arguments);
-    const config = getOwner(this).resolveRegistration('config:environment');
   },
 
   /**
