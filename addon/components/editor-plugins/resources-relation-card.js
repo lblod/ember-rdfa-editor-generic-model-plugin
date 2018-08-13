@@ -20,22 +20,37 @@ export default Component.extend(CardMixin, {
     let relationMeta = yield this.getRelationOfInterest(propLabel, domainType);
     let resources = yield this.queryResource(relationMeta.range, searchQuery);
 
-    resources.map(r => {
+    yield Promise.all(resources.map(async r => {
       r.relationMeta = relationMeta;
-      r.display = this.formatResourceDisplay(r, relationMeta.range);
-    });
+      r.display = await this.formatClassDisplay(r, await relationMeta.get('range'));
+    }));
 
     this.set('resources', resources);
   }),
 
-  formatResourceDisplay(resource, classMeta){
-    let displayPropsToShow = JSON.parse(classMeta.get('displayProperties'));
+  async formatClassDisplay(resource, classMeta){
+    let displayPropsToShow = JSON.parse(classMeta.displayProperties || '[]');
     let displayProperties = [];
-    displayPropsToShow.map(p => {
-      displayProperties.push(resource['attributes'][p]);
-    });
+    await Promise.all(displayPropsToShow.map(async p => {
+      let attrNames = p.split('.'); //expects persoon.is-bestuurlijke-alias-van
+      let propValue = await this.fetchNestedAttrValue(resource, attrNames);
+      displayProperties.push(propValue);
+    }));
 
     return displayProperties.join(' ');
+  },
+
+  async fetchNestedAttrValue(resource, attrNames){
+    //TODO: fix has-many
+    if(attrNames.length == 0 || Object.keys(resource).length == 0)
+      return '';
+    let attrName = attrNames[0];
+    if(attrName in resource['attributes'])
+      return resource['attributes'][attrName];
+
+    let updatedResource = this.parseJSONAPIResults(await this.ajax.request(resource['relationships'][attrName].links.related));
+
+    return this.fetchNestedAttrValue(updatedResource, attrNames.slice(1));
   },
 
   async getRelationOfInterest(propLabel, domainType){
@@ -48,7 +63,7 @@ export default Component.extend(CardMixin, {
     let queryStr = `${classMetaData.get('apiPath')}`;
     if(query){
       queryStr = `${queryStr}?${classMetaData.get('apiFilter')}=${query}`;
-    };
+    }
     let results = await this.get('ajax').request(queryStr);
     results = this.get('parseJSONAPIResults')(results);
     return results;
