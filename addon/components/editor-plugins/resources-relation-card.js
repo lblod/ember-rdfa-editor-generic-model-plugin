@@ -3,6 +3,7 @@ import layout from '../../templates/components/editor-plugins/resources-relation
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
+import { formatClassDisplay, parseJSONAPIResults } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
@@ -22,36 +23,11 @@ export default Component.extend(CardMixin, {
 
     yield Promise.all(resources.map(async r => {
       r.relationMeta = relationMeta;
-      r.display = await this.formatClassDisplay(r, await relationMeta.get('range'));
+      r.display = await formatClassDisplay( query => { return this.ajax.request(query); }, await relationMeta.get('range'), r);
     }));
 
     this.set('resources', resources);
   }),
-
-  async formatClassDisplay(resource, classMeta){
-    let displayPropsToShow = JSON.parse(classMeta.displayProperties || '[]');
-    let displayProperties = [];
-    await Promise.all(displayPropsToShow.map(async p => {
-      let attrNames = p.split('.'); //expects persoon.is-bestuurlijke-alias-van
-      let propValue = await this.fetchNestedAttrValue(resource, attrNames);
-      displayProperties.push(propValue);
-    }));
-
-    return displayProperties.join(' ');
-  },
-
-  async fetchNestedAttrValue(resource, attrNames){
-    //TODO: fix has-many
-    if(attrNames.length == 0 || Object.keys(resource).length == 0)
-      return '';
-    let attrName = attrNames[0];
-    if(attrName in resource['attributes'])
-      return resource['attributes'][attrName];
-
-    let updatedResource = this.parseJSONAPIResults(await this.ajax.request(resource['relationships'][attrName].links.related));
-
-    return this.fetchNestedAttrValue(updatedResource, attrNames.slice(1));
-  },
 
   async getRelationOfInterest(propLabel, domainType){
     let params = {'filter[:exact:label]': propLabel, 'include': 'domain,range', 'filter[domain][:uri:]': domainType};
@@ -65,12 +41,8 @@ export default Component.extend(CardMixin, {
       queryStr = `${queryStr}?${classMetaData.get('apiFilter')}=${query}`;
     }
     let results = await this.get('ajax').request(queryStr);
-    results = this.get('parseJSONAPIResults')(results);
+    results = parseJSONAPIResults(results);
     return results;
-  },
-
-  parseJSONAPIResults(results){
-    return results['data'];
   },
 
   rdfaForRefer(prop, uri, typeOf, display){
