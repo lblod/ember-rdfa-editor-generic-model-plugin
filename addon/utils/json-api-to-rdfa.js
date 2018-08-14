@@ -46,7 +46,7 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
   let result = parseJSONAPIResults(await queryCaller(query));
 
   //serialize attributes
-  //TODO: dataType
+  //TODO: add dataType
   let rdfaProps = attributes.map(p => {
     return `<div> ${p.get('label')}: <div property=${p.get('rdfaType')}> ${result.attributes[p.label]}</div> </div>`;
   }).join('');
@@ -55,12 +55,21 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
   let rdfaRels = (await Promise.all(relations.map(async r => {
     //find included data for property
     let relData = parseJSONAPIResults(await queryCaller(result.relationships[r.label].links.related));
-    //TODO: hasMANY!!
+
+    //handle as if everything is has many
     let relMetaData = await r.range;
 
-    let displayLabel = await formatClassDisplay(queryCaller, relMetaData, relData);
+    if(!Array.isArray(relData)){
+      relData = [ relData ];
+    }
 
-    return `${r.label}: <span property=${r.rdfaType} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
+    let labels = await Promise.all(relData.map(async rel => {
+      let displayLabel = await formatClassDisplay(queryCaller, relMetaData, rel);
+      return `<span property=${r.rdfaType} typeOf=${relMetaData.uri} resource=${rel.attributes.uri}>${displayLabel}</span> <br /> <br />`;
+    }));
+
+    return `<div> ${r.label} <div>${labels.join(" ")}</div> </div>`;
+
   }))).join('');
 
   if(prop){
