@@ -54,5 +54,11 @@ export default Mixin.create({
    * @type HintsRegistry
    * @private
   */
-  hintsRegistry: reads('info.hintsRegistry')
+  hintsRegistry: reads('info.hintsRegistry'),
+
+  rdfsClassForType: async function(classType){
+    let params = {'filter[:exact:label]': classType};
+    let results = await this.store.query('rdfs-class', params);
+    return results.firstObject || {};
+  }
 });
