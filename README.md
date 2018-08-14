@@ -18,8 +18,29 @@ Plugin responsible for injecting and creating resources within a document.
 
 Currently
 
-~/classType:searchTerm
-./property:searchTerm
+* ~/classType:searchTerm
+
+* ./property:searchTerm
+
+TODOS
+-------------------------------------------------------------------------------
+* match multiple '~/' of './' at the same time in the same context
+* pagination handling
+   * cards should have 'next/previous'
+   * in disaplay mode, if has-many -> walk all results...
+* cleaning of parsing string
+* include? as parameter (not sure)
+* filtering on label when search is NOK -> should be URI match (re-think this)
+* datamodel is still not ok -> a property has a name within the namespace of a class. Revist this...
+* fix representation has-many e.g. ['persoon.is-aangesteld-als[].mandaat.label']
+* specify data type in property
+* parsing of start command should match ~/personen:"van den berghe"
+* display labels should vary in function of the shown property e.g:
+  * starting from mandataris the label should be "Naam, Voornaam, Mandaat (label)"
+  * but if you include a mandataris in persoon, the mandataris should just have "Mandaat (label)"
+* general clean up of code
+* strip nasty chars
+
 
 
 

@@ -1,14 +1,6 @@
 import Service from '@ember/service';
 import EmberObject from '@ember/object';
 import { task } from 'ember-concurrency';
-//TODO: do we want recursive pattern matching e.g. ~/persoon:felix.is-aangesteld-als:flierefluiter.einddatum ?
-//TODO: match multiple times ~/
-//TODO: pagination
-//TODO: nog wat zeer irritante problemen met invislbe space enzo
-//TODO: include? as parameter
-//TODO: filtering on label when search is NOK -> should be URI match
-//TODO: nested presentation -> e.g. mandataris (mandaat, persoon)
-//TODO:  display relation
 
 //order matters
 const INJECTCONTEXTS = [
