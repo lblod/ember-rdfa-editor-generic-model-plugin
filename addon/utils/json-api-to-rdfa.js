@@ -48,7 +48,7 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
   //serialize attributes
   //TODO: dataType
   let rdfaProps = attributes.map(p => {
-    return `<div> ${p.get('label')}: <div property=${p.get('uri')}> ${result.attributes[p.label]}</div> </div>`;
+    return `<div> ${p.get('label')}: <div property=${p.get('rdfaType')}> ${result.attributes[p.label]}</div> </div>`;
   }).join('');
 
   //serialize relations
@@ -60,17 +60,17 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
 
     let displayLabel = await formatClassDisplay(queryCaller, relMetaData, relData);
 
-    return `${r.label}: <span property=${r.uri} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
+    return `${r.label}: <span property=${r.rdfaType} typeOf=${relMetaData.uri} resource=${relData.attributes.uri}>${displayLabel}</span>`;
   }))).join('');
 
   if(prop){
-    return `<div property=${prop} typeOf="${classMeta.uri}" resource=${result.attributes['uri']}>
+    return `<div property=${prop} typeOf="${classMeta.rdfaType}" resource=${result.attributes['uri']}>
             ${rdfaProps}
             ${rdfaRels}
           </div>`;
   }
 
-  return `<div typeOf="${classMeta.uri}" resource=${result.attributes['uri']}>
+  return `<div typeOf="${classMeta.rdfaType}" resource=${result.attributes['uri']}>
             ${rdfaProps}
             ${rdfaRels}
           </div>`;

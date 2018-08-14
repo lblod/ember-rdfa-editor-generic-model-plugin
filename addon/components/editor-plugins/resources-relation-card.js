@@ -30,7 +30,7 @@ export default Component.extend(CardMixin, {
   }),
 
   async getRelationOfInterest(propLabel, domainType){
-    let params = {'filter[:exact:label]': propLabel, 'include': 'domain,range', 'filter[domain][:uri:]': domainType};
+    let params = {'filter[:exact:label]': propLabel, 'include': 'domain,range', 'filter[domain][rdfa-type]': domainType};
     let results = await this.store.query('rdfs-property', params);
     return results.firstObject || {};
   },
@@ -53,15 +53,15 @@ export default Component.extend(CardMixin, {
     refer(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
-      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForRefer(data.relationMeta.uri,
+      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForRefer(data.relationMeta.rdfaType,
                                                                                      data.attributes.uri,
-                                                                                     data.relationMeta.get('range.uri'),
+                                                                                     data.relationMeta.get('range.rdfaType'),
                                                                                       data.display));
     },
 
     async extend(data){
       let classMetaData = await this.rdfsClassForType(data.type);
-      let rdfa = await extendedRdfa(query => { return this.ajax.request(query); }, data, classMetaData, data.relationMeta.uri);
+      let rdfa = await extendedRdfa(query => { return this.ajax.request(query); }, data, classMetaData, data.relationMeta.rdfaType);
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
       this.get('editor').replaceTextWithHTML(...mappedLocation, rdfa);

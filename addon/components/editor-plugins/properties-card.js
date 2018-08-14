@@ -15,7 +15,7 @@ export default Component.extend(CardMixin, {
   getAvailibleProperties: task( function *() {
     let query = this.get('info.query').replace(/\u200B/, '').split('./')[1];
     let type = this.get('context').context[this.get('context').context.length - 1].object;
-    let params = {'filter[domain][:uri:]': type, 'include': 'range'};
+    let params = {'filter[domain][rdfa-type]': type, 'include': 'range'};
 
     if(query){
       params['filter[label]'] = query;
@@ -45,12 +45,12 @@ export default Component.extend(CardMixin, {
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
 
       if(data.range.get('isPrimitive')){
-        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.uri));
+        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.rdfaType));
         return;
       }
       this.get('editor').replaceTextWithHTML(...mappedLocation,
-                                             this.rdfaForCreateRelationship(data.label, data.uri,
-                                                                            data.range.get('uri'),
+                                             this.rdfaForCreateRelationship(data.label, data.rdfaType,
+                                                                            data.range.get('rdfaType'),
                                                                             data.range.get('baseUri')));
     },
     search(){

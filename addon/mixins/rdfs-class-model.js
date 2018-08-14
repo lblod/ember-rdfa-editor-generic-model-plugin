@@ -11,5 +11,6 @@ export default Mixin.create({
   displayProperties: attr(),
   baseUri: attr(),
   apiFilter: attr(),
+  rdfaType: attr(),
   properties: hasMany('rdfs-property', { inverse:  'domain' })
 });

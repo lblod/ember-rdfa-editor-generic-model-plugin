@@ -48,7 +48,7 @@ export default Component.extend(CardMixin, {
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
       this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForRefer(data.attributes.uri,
-                                                                                      data.classMeta.uri,
+                                                                                      data.classMeta.rdfaType,
                                                                                       data.display));
     },
     async extend(data){
