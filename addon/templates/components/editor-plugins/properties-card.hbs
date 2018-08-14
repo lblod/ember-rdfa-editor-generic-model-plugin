@@ -20,7 +20,7 @@
         <h3>{{result.label}}</h3>
         <a href="#" onClick={{action "create" result}}>aanmaken</a>
         {{#unless result.range.isPrimitive}}
-          <a href="#" onClick={{action "search"}}>zoeken</a>
+          <a href="#" onClick={{action "search" result}}>zoeken</a>
         {{/unless}}
       {{/each}}
     </div>

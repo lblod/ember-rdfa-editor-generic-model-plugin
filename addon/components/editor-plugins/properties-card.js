@@ -54,6 +54,7 @@ export default Component.extend(CardMixin, {
                                                                             data.range.get('baseUri')));
     },
     search(){
+      alert('Not implemented yet, type e.g. ./is-bestuurlijke-alias-van:alain');
     }
   }
 });

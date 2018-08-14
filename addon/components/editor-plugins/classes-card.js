@@ -44,6 +44,7 @@ export default Component.extend(CardMixin, {
                                                                                       data.baseUri));
     },
     search(){
+      alert('Not implemented yet, type e.g. ~/personen:clae');
     }
   }
 });

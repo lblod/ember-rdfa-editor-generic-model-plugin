@@ -19,7 +19,9 @@
         {{#each results as |result|}}
             <h3>{{result.label}}</h3>
             <a href="#" onClick={{action "create" result}}>aanmaken</a>
-            <a href="#" onClick={{action "search"}}>zoeken</a>
+            {{#unless result.isPrimitive}}
+              <a href="#" onClick={{action "search" result}}>zoeken</a>
+            {{/unless}}
         {{/each}}
     </div>
   {{else}}

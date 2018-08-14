@@ -64,7 +64,7 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
 
     let labels = await Promise.all(relData.map(async rel => {
       let displayLabel = await formatClassDisplay(queryCaller, relMetaData, rel);
-      return `<span property=${r.rdfaType} typeOf=${relMetaData.uri} resource=${rel.attributes.uri}>${displayLabel}</span> <br /> <br />`;
+      return `<span property=${r.rdfaType} typeOf=${relMetaData.rdfaType} resource=${rel.attributes.uri}>${displayLabel}</span> <br /> <br />`;
     }));
 
     return `<div> ${r.label} <div>${labels.join(" ")}</div> </div>`;
