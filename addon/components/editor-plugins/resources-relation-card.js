@@ -3,7 +3,7 @@ import layout from '../../templates/components/editor-plugins/resources-relation
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
-import { formatClassDisplay, parseJSONAPIResults } from '../../utils/json-api-to-rdfa';
+import { formatClassDisplay, parseJSONAPIResults, extendedRdfa } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
@@ -58,7 +58,14 @@ export default Component.extend(CardMixin, {
                                                                                      data.relationMeta.get('range.uri'),
                                                                                       data.display));
     },
-    extend(){
+
+    async extend(data){
+      let classMetaData = await this.rdfsClassForType(data.type);
+      let rdfa = await extendedRdfa(query => { return this.ajax.request(query); }, data, classMetaData, data.relationMeta.uri);
+      let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
+      this.get('editor').replaceTextWithHTML(...mappedLocation, rdfa);
     }
   }
+
 });
