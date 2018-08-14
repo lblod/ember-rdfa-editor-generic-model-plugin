@@ -11,7 +11,7 @@ const formatClassDisplay = async function formatClassDisplay(queryCaller, rdfsCl
 };
 
 const fetchNestedAttrValue = async function fetchNestedAttrValue(queryCaller, resource, attrNames){
-  //TODO: fix has-many
+  //TODO: has-many will fail now
   if(attrNames.length == 0 || Object.keys(resource).length == 0)
     return '';
   let attrName = attrNames[0];
@@ -31,7 +31,7 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
   //get properties from class
   let properties = await classMeta.get('properties');
 
-  //make difference between attributes
+  //make difference between attributes and relations
   let attributes = [];
   let relations = [];
   await Promise.all(properties.map(async p => {
@@ -41,24 +41,23 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
       attributes.push(p);
   }));
 
-  //start query
+  //start query to fetch resource
   let query = `${classMeta.apiPath}/${resourceData.id}`;
   let result = parseJSONAPIResults(await queryCaller(query));
 
   //serialize attributes
-  //TODO: add dataType
+  //TODO: add dataType to property
   let rdfaProps = attributes.map(p => {
     return `<div> ${p.get('label')}: <div property=${p.get('rdfaType')}> ${result.attributes[p.label]}</div> </div>`;
   }).join('');
 
-  //serialize relations
+  //serialize relations (will be references to)
   let rdfaRels = (await Promise.all(relations.map(async r => {
-    //find included data for property
+    //find included resource for property
     let relData = parseJSONAPIResults(await queryCaller(result.relationships[r.label].links.related));
 
     //handle as if everything is has many
     let relMetaData = await r.range;
-
     if(!Array.isArray(relData)){
       relData = [ relData ];
     }
