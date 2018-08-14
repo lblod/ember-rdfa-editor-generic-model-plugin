@@ -18,7 +18,7 @@ export default Component.extend(CardMixin, {
     let preParsedString = this.get('info.query').replace(/\u200B/, '').split('/')[1];
     let classLabel = preParsedString.split(':')[0];
     let searchQuery = preParsedString.split(':')[1];
-    let classMeta = yield this.getClassOfInterest(classLabel);
+    let classMeta = yield this.rdfsClassForType(classLabel);
     let resources = yield this.queryResource(classMeta, searchQuery);
 
     yield Promise.all(resources.map(async r => {
@@ -28,12 +28,6 @@ export default Component.extend(CardMixin, {
 
     this.set('resources', resources);
   }),
-
-  async getClassOfInterest(classLabel){
-    let params = {'filter[:exact:label]': classLabel};
-    let results = await this.store.query('rdfs-class', params);
-    return results.firstObject || {};
-  },
 
   async queryResource(classMetaData, query){
     let queryStr = `${classMetaData.apiPath}`;
