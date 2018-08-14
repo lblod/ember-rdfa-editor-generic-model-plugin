@@ -24,6 +24,7 @@ Currently
 
 TODOS
 -------------------------------------------------------------------------------
+* think about inverse relations...
 * match multiple '~/' of './' at the same time in the same context
 * pagination handling
    * cards should have 'next/previous'
