@@ -52,7 +52,10 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
   //serialize attributes
   //TODO: add dataType to property
   let rdfaProps = attributes.map(p => {
-    return `<div> ${p.get('label')}: <div property=${p.get('rdfaType')}> ${result.attributes[p.label]}</div> </div>`;
+    if(!result.attributes[p.label])
+      return '';
+    let datatypeIfProvided = p.get('range.rdfaType') ? `datatype=${p.get('range.rdfaType')}`:'';
+    return `<div> ${p.get('label')}: <div property=${p.get('rdfaType')} ${datatypeIfProvided}> ${result.attributes[p.label]}</div> </div>`;
   }).join('');
 
   //serialize relations (will be references to)
