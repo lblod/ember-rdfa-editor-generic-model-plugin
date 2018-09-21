@@ -31,9 +31,15 @@ export default Component.extend(CardMixin, {
 
   async queryResource(classMetaData, query){
     let queryStr = `${classMetaData.apiPath}`;
-    if(query){
+
+    if(query && !classMetaData.apiFilter){
+      queryStr = `${queryStr}?filter=${query}`;
+    }
+    //if you need to filter mandataris, you'll probably look his name up.
+    if(query && classMetaData.apiFilter){
       queryStr = `${queryStr}?${classMetaData.apiFilter}=${query}`;
     }
+
     let results = await this.get('ajax').request(queryStr);
     results = parseJSONAPIResults(results);
     return results;
