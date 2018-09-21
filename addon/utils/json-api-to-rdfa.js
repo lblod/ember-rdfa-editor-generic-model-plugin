@@ -15,6 +15,10 @@ const fetchNestedAttrValue = async function fetchNestedAttrValue(queryCaller, re
   if(attrNames.length == 0 || Object.keys(resource).length == 0)
     return '';
   let attrName = attrNames[0];
+
+  if(!(attrName in resource['attributes']) && !resource['relationships'][attrName])
+    return '';
+
   if(attrName in resource['attributes'])
     return resource['attributes'][attrName];
 
