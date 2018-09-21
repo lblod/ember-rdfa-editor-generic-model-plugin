@@ -45,7 +45,7 @@ export default Component.extend(CardMixin, {
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
 
       if(data.range.get('isPrimitive')){
-        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.rdfaType));
+        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.rdfaType, data.get('range.rdfaType')));
         return;
       }
       this.get('editor').replaceTextWithHTML(...mappedLocation,
