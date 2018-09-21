@@ -60,6 +60,9 @@ const extendedRdfa = async function extendedRdfa(queryCaller, resourceData, clas
     //find included resource for property
     let relData = parseJSONAPIResults(await queryCaller(result.relationships[r.label].links.related));
 
+    if(!relData)
+      return '';
+
     //handle as if everything is has many
     let relMetaData = await r.range;
     if(!Array.isArray(relData)){
