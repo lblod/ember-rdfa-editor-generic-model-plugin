@@ -18,7 +18,7 @@ export default Component.extend(CardMixin, {
     let preParsedString = this.get('info.query').replace(/\u200B/, '').split('/')[1];
     let classLabel = preParsedString.split(':')[0];
     let searchQuery = preParsedString.split(':')[1];
-    let classMeta = yield this.rdfsClassForType(classLabel);
+    let classMeta = yield this.rdfsClassForTypeLabel(classLabel);
     let resources = yield this.queryResource(classMeta, searchQuery);
 
     yield Promise.all(resources.map(async r => {

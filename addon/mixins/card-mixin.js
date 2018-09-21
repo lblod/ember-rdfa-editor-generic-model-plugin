@@ -56,8 +56,14 @@ export default Mixin.create({
   */
   hintsRegistry: reads('info.hintsRegistry'),
 
-  rdfsClassForType: async function(classType){
+  rdfsClassForTypeLabel: async function(classType){
     let params = {'filter[:exact:label]': classType};
+    let results = await this.store.query('rdfs-class', params);
+    return results.firstObject || {};
+  },
+
+  rdfsClassForJsonApiType: async function(jsonApiType){
+    let params = {'filter[:exact:json-api-type]': jsonApiType};
     let results = await this.store.query('rdfs-class', params);
     return results.firstObject || {};
   }

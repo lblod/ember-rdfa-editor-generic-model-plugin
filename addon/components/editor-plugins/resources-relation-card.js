@@ -60,7 +60,7 @@ export default Component.extend(CardMixin, {
     },
 
     async extend(data){
-      let classMetaData = await this.rdfsClassForType(data.type);
+      let classMetaData = await this.rdfsClassForJsonApiType(data.type);
       let rdfa = await extendedRdfa(query => { return this.ajax.request(query); }, data, classMetaData, data.relationMeta.rdfaType);
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
