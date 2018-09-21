@@ -25,8 +25,8 @@ export default Component.extend(CardMixin, {
     this.set('results', results);
   }),
 
-  rdfaForCreateProperty(label, propertyId){
-    return `<div> ${label}: <div property=${propertyId}>&nbsp;</div> </div>`;
+  rdfaForCreateProperty(label, propertyId, rdfaType){
+    return `<div> ${label}: <div property=${propertyId} datatype=${rdfaType}>&nbsp;</div> </div>`;
   },
 
   rdfaForCreateRelationship(label, propertyId, typeOf, uriBase){
