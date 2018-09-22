@@ -95,8 +95,8 @@ const attributePropertyToRdfa = function attributePropertyToRdfa(attributeMeta, 
  * @private
  */
 const relationPropertyToRdfaReference = function relationPropertyToRdfaReference(propertyMeta, relationMeta, relationResource, relationResourceDisplayLabel){
-  return `<div property=${propertyMeta.rdfaType}
-               typeOf=${relationMeta.rdfaType}
+  return `<div property=${propertyMeta.get('rdfaType')}
+               typeOf=${relationMeta.get('rdfaType')}
                resource=${relationResource.attributes.uri}>
             ${relationResourceDisplayLabel}
           </div>`;
@@ -115,7 +115,7 @@ const relationPropertyToRdfaReference = function relationPropertyToRdfaReference
  */
 const relationPropertyResourcesToRdfa = function relationPropertyResourcesToRdfa(propertyMeta, rdfaRelationResources){
     return `<div>
-              ${propertyMeta.label}
+              ${propertyMeta.get('label')}
               <div>
                 ${rdfaRelationResources.join(" ")}
               </div>
@@ -151,7 +151,7 @@ const resourceToRdfa = function resourceToRdfa(classMeta, resource, rdfaProps, r
 };
 
 /**
- * Helper group all Rdfa-props and Rdfa-relations of resource to Rdfa
+ * Expands resource to RDFA. Relations of the resource will contain only a reference.
  * @method resourceToRdfa
  * @param {Function}  function(path), async function returning JSON API to get Relations
  * @param {Object} the JSON representation of the resource
@@ -219,5 +219,6 @@ export {
   formatClassDisplay,
   fetchNestedAttrValue,
   parseJSONAPIResults,
-  extendedRdfa
+  extendedRdfa,
+  relationPropertyToRdfaReference
 }

@@ -4,6 +4,7 @@ import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
 import { formatClassDisplay, parseJSONAPIResults, extendedRdfa } from '../../utils/json-api-to-rdfa';
+import { relationPropertyToRdfaReference } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
@@ -45,18 +46,15 @@ export default Component.extend(CardMixin, {
     return results;
   },
 
-  rdfaForRefer(prop, uri, typeOf, display){
-    return `<span property=${prop} typeOf=${typeOf} resource=${uri}>${display}</span>`;
-  },
-
   actions: {
     refer(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
-      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForRefer(data.relationMeta.rdfaType,
-                                                                                     data.attributes.uri,
-                                                                                     data.relationMeta.get('range.rdfaType'),
-                                                                                      data.display));
+      this.get('editor').replaceTextWithHTML(...mappedLocation,
+                                             relationPropertyToRdfaReference(data.relationMeta,
+                                                                             data.relationMeta.get('range'),
+                                                                             data,
+                                                                             data.display));
     },
 
     async extend(data){
