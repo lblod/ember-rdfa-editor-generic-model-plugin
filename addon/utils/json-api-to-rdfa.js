@@ -192,7 +192,7 @@ const extendedRdfa = async function extendedRdfa(callRelation, resourceData, cla
     //fetch included resource for property
     let relationResources = parseJSONAPIResults(await callRelation(resource.relationships[propertyMeta.label].links.related));
 
-    if(!relationResources)
+    if(!relationResources || relationResources.length == 0)
       return '';
 
     //handle as if everything is has many
@@ -220,5 +220,4 @@ export {
   fetchNestedAttrValue,
   parseJSONAPIResults,
   extendedRdfa
-
 }
