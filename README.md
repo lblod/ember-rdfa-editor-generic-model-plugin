@@ -16,11 +16,14 @@ Usage
 
 Plugin responsible for injecting and creating resources within a document.
 
-Currently
+Currently it starts matching
 
-* ~/classType:searchTerm
+* ~/classType:searchTermWithNoSpaces
+* ~/classType:"searchTerm With Spaces"
 
-* ./property:searchTerm
+* ./property:searchTermWithNoSpaces
+* ./property:"searchTerm With Spaces"
+
 
 TODOS
 -------------------------------------------------------------------------------
