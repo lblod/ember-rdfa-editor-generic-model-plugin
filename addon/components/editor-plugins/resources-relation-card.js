@@ -17,7 +17,7 @@ export default Component.extend(CardMixin, {
   getAvailibleResources: task( function *() {
     let preParsedString = this.get('info.query').replace(/\u200B/, '').split('/')[1];
     let propLabel = preParsedString.split(':')[0];
-    let searchQuery = preParsedString.split(':')[1];
+    let searchQuery = preParsedString.split(':')[1].replace(/\s+/g, ' ').replace(/"+/g, '');
     let domainType = this.get('context').context[this.get('context').context.length - 1].object;
     let relationMeta = yield this.getRelationOfInterest(propLabel, domainType);
     let resources = yield this.queryResource(relationMeta.range, searchQuery);
