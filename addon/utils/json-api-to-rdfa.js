@@ -75,11 +75,12 @@ const parseJSONAPIResults = function parseJSONAPIResults(results){
 const attributePropertyToRdfa = function attributePropertyToRdfa(attributeMeta, resource){
   let datatypeIfProvided = attributeMeta.get('range.rdfaType') ? `datatype=${attributeMeta.get('range.rdfaType')}`:'';
   let resourceData = resource ? resource.attributes[attributeMeta.label] : '&nbsp;';
-  return `${attributeMeta.get('label')}:
-            <span property=${attributeMeta.get('rdfaType')} ${datatypeIfProvided}>
+  return `<div>
+            ${attributeMeta.get('label')}:
+            <div property=${attributeMeta.get('rdfaType')} ${datatypeIfProvided}>
               ${resourceData}
-            </span>
-          `;
+            </div>
+          </div> &nbsp;`;
 };
 
 /**
