@@ -3,6 +3,7 @@ import layout from '../../templates/components/editor-plugins/classes-card';
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import uuidv4 from 'uuidv4';
+import { resourceToRdfa } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
@@ -26,22 +27,12 @@ export default Component.extend(CardMixin, {
     this.set('results', results);
   }),
 
-  rdfaForCreateInstance(label, typeOf, uriBase){
-    let uri = `${uriBase}${uuidv4()}`;
-    return `
-       <div typeof=${typeOf} resource="${uri}">
-       &nbsp;
-      </div>
-    `;
-  },
-
   actions: {
     create(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
-      this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateInstance(data.label,
-                                                                                      data.rdfaType,
-                                                                                      data.baseUri));
+      this.get('editor').replaceTextWithHTML(...mappedLocation, resourceToRdfa(data,
+                                                                               {attributes: {uri: `${data.get('baseUri')}${uuidv4()}`}}));
     },
     search(){
       alert('Not implemented yet, type e.g. ~/personen:clae');

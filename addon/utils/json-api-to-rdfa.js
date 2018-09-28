@@ -74,12 +74,12 @@ const parseJSONAPIResults = function parseJSONAPIResults(results){
  */
 const attributePropertyToRdfa = function attributePropertyToRdfa(attributeMeta, resource){
   let datatypeIfProvided = attributeMeta.get('range.rdfaType') ? `datatype=${attributeMeta.get('range.rdfaType')}`:'';
-  return `<div>
-            ${attributeMeta.get('label')}
-              <div property=${attributeMeta.get('rdfaType')} ${datatypeIfProvided}>
-                ${resource.attributes[attributeMeta.label]}
-              </div>
-          </div>`;
+  let resourceData = resource ? resource.attributes[attributeMeta.label] : '&nbsp;';
+  return `${attributeMeta.get('label')}:
+            <span property=${attributeMeta.get('rdfaType')} ${datatypeIfProvided}>
+              ${resourceData}
+            </span>
+          `;
 };
 
 /**
@@ -95,11 +95,12 @@ const attributePropertyToRdfa = function attributePropertyToRdfa(attributeMeta, 
  * @private
  */
 const relationPropertyToRdfaReference = function relationPropertyToRdfaReference(propertyMeta, relationMeta, relationResource, relationResourceDisplayLabel){
+  let labelData = relationResourceDisplayLabel ? relationResourceDisplayLabel : '&nbsp;';
   return `<div property=${propertyMeta.get('rdfaType')}
                typeOf=${relationMeta.get('rdfaType')}
                resource=${relationResource.attributes.uri}>
-            ${relationResourceDisplayLabel}
-          </div>`;
+            ${labelData}
+          </div> &nbsp;`;
 };
 
 
@@ -138,16 +139,31 @@ const relationPropertyResourcesToRdfa = function relationPropertyResourcesToRdfa
  */
 const resourceToRdfa = function resourceToRdfa(classMeta, resource, rdfaProps, rdfaRels, propertyRef){
     if(propertyRef){
-    return `<div property=${propertyRef} typeOf="${classMeta.rdfaType}" resource=${resource.attributes['uri']}>
-              ${rdfaProps}
-              ${rdfaRels}
-            </div>`;
+      return `<div property=${propertyRef} typeOf="${classMeta.rdfaType}" resource=${resource.attributes['uri']}>
+                ${rdfaProps || '&nbsp;'}
+                ${rdfaRels || '&nbsp;'}
+              </div> &nbsp;`;
   }
 
   return `<div typeOf="${classMeta.rdfaType}" resource=${resource.attributes['uri']}>
-            ${rdfaProps}
-            ${rdfaRels}
-          </div>`;
+            ${rdfaProps || '&nbsp;'}
+            ${rdfaRels || '&nbsp;'}
+          </div> &nbsp;`;
+};
+
+/**
+ * Presents resource as RDFA reference
+ * @method referResourceToRdfa
+ * @param {Object} the metaData model from resource
+ * @param {Object} the resource
+ * @param {String} label
+ *
+ * @return {String} RDFA representation of the reference of resource
+ *
+ * @private
+ */
+const referResourceToRdfa = function referResourceToRdfa(classMeta, resource, display){
+  return `<span typeOf="${classMeta.rdfaType}" resource=${resource.attributes['uri']}>${display}</span>`;
 };
 
 /**
@@ -220,5 +236,8 @@ export {
   fetchNestedAttrValue,
   parseJSONAPIResults,
   extendedRdfa,
-  relationPropertyToRdfaReference
+  relationPropertyToRdfaReference,
+  attributePropertyToRdfa,
+  resourceToRdfa,
+  referResourceToRdfa
 }

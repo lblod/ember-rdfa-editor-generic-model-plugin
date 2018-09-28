@@ -3,6 +3,7 @@ import layout from '../../templates/components/editor-plugins/properties-card';
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import uuidv4 from 'uuidv4';
+import { attributePropertyToRdfa, relationPropertyToRdfaReference } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
@@ -25,33 +26,20 @@ export default Component.extend(CardMixin, {
     this.set('results', results);
   }),
 
-  rdfaForCreateProperty(label, propertyId, rdfaType){
-    return `<div> ${label}: <div property=${propertyId} datatype=${rdfaType}>&nbsp;</div> </div>`;
-  },
-
-  rdfaForCreateRelationship(label, propertyId, typeOf, uriBase){
-    let uri = `${uriBase}${uuidv4()}`;
-    return `
-       ${label}
-       <div property=${propertyId} typeof=${typeOf} resource="${uri}">
-       &nbsp;
-      </div>
-    `;
-  },
-
   actions: {
     async create(data){
       let mappedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
       this.get('hintsRegistry').removeHintsAtLocation(this.get('location'), this.get('hrId'), 'editor-plugins/generic-model-plugin');
 
       if(data.range.get('isPrimitive')){
-        this.get('editor').replaceTextWithHTML(...mappedLocation, this.rdfaForCreateProperty(data.label, data.rdfaType, data.get('range.rdfaType')));
+        this.get('editor').replaceTextWithHTML(...mappedLocation, attributePropertyToRdfa(data));
         return;
       }
       this.get('editor').replaceTextWithHTML(...mappedLocation,
-                                             this.rdfaForCreateRelationship(data.label, data.rdfaType,
-                                                                            data.range.get('rdfaType'),
-                                                                            data.range.get('baseUri')));
+                                             relationPropertyToRdfaReference(data,
+                                                                             data.range,
+                                                                             {attributes: {uri: `${data.range.get('baseUri')}${uuidv4()}`}}
+                                                                            ));
     },
     search(){
       alert('Not implemented yet, type e.g. ./is-bestuurlijke-alias-van:alain');
