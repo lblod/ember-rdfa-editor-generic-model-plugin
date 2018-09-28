@@ -31,7 +31,6 @@ TODOS
    * in disaplay mode, if has-many -> walk all results...
 * cleaning of parsing string
 * include? as parameter (not sure)
-* filtering on label when search is NOK -> should be URI match (re-think this)
 * datamodel is still not ok -> a property has a name within the namespace of a class. Revist this...
 * fix representation has-many e.g. ['persoon.is-aangesteld-als[].mandaat.label']
 * specify data type in property
