@@ -3,7 +3,11 @@ import layout from '../../templates/components/editor-plugins/resources-relation
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
-import { formatClassDisplay, parseJSONAPIResults, extendedRdfa } from '../../utils/json-api-to-rdfa';
+import {
+  formatClassDisplay,
+  parseJSONAPIResults,
+  extendedRdfa
+} from '../../utils/json-api-to-rdfa';
 import { relationPropertyToRdfaReference } from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {

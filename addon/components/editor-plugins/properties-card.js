@@ -3,7 +3,10 @@ import layout from '../../templates/components/editor-plugins/properties-card';
 import CardMixin from '../../mixins/card-mixin';
 import { task } from 'ember-concurrency';
 import uuidv4 from 'uuidv4';
-import { attributePropertyToRdfa, relationPropertyToRdfaReference } from '../../utils/json-api-to-rdfa';
+import {
+  attributePropertyToRdfa,
+  relationPropertyToRdfaReference
+} from '../../utils/json-api-to-rdfa';
 
 export default Component.extend(CardMixin, {
   layout,
