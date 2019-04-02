@@ -22,7 +22,25 @@ const INJECTCONTEXTS = [
   }];
 
 /**
- * Service responsible for correct annotation of dates
+ * Service responsible for detecting special string to trigger the meta-model to insert Rdfa
+ *
+ *
+ * ---------------------------------------------------
+ * CODE REVIEW NOTES
+ * ---------------------------------------------------
+ *
+ *  INTERACTION PATTERNS
+ *  --------------------
+ *  For all incoming contexts, check is a special string pattern (something like "~/besluit") is detected. Highlight this text and add a hint.
+ *  When clicked, the highlighted text will be used in the card to query the meta model.
+ *  On insert, the highlighted text is replaced with HTML.
+ *
+ *  POTENTIAL ISSUES/TODO
+ *  ---------------------
+ *  TODO: eventually reconsider the restarable task. (but since all sync code, this should not affect the hints generation)
+ * ---------------------------------------------------
+ * END CODE REVIEW NOTES
+ * ---------------------------------------------------
  *
  * @module editor-generic-model-plugin
  * @class RdfaEditorGenericModelPlugin
