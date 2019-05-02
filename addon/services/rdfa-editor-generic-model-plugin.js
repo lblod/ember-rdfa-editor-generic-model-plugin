@@ -79,7 +79,7 @@ const RdfaEditorGenericModelPlugin = Service.extend({
     if(cards.length > 0){
       hintsRegistry.addHints(hrId, this.get('who'), cards);
     }
-  }).restartable(),
+  }),
 
   /**
    * Given context object, tries to detect a context the plugin can work on
