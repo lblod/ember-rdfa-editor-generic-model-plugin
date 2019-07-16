@@ -94,7 +94,7 @@ const RdfaEditorGenericModelPlugin = Service.extend({
    */
   detectRelevantContext(context){
     return INJECTCONTEXTS.find(c => {
-      return context.text.toLowerCase().match(c.pattern);
+      return (context.text || '').toLowerCase().match(c.pattern);
     });
   },
 
@@ -155,7 +155,7 @@ const RdfaEditorGenericModelPlugin = Service.extend({
    */
   generateHintsForContext(injectContext, context){
     const hints = [];
-    const matched = context.text.toLowerCase().match(injectContext.pattern);
+    const matched = (context.text || '').toLowerCase().match(injectContext.pattern);
     const index = matched.index;
     const text = matched[0];
     const location = this.normalizeLocation([index, index + matched[0].length], context.region);
